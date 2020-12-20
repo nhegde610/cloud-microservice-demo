@@ -8,23 +8,6 @@ app = Flask(__name__)
 CORS(app,resources={r"/api/*": {"origins":"*"}})
 app.config['JSONIFY_PRETTYPRINT_REGULAR']= False
 
-@app.route("/api/info")
-def home_index():
-    conn = sqlite3.connect('mydb.db')
-    print("opened database successully")
-    api_list=[]
-    cursor = conn.execute("SELECT buildtime,version,methods,links from apirelease")
-    for row in cursor:
-        s_dict = {}
-        s_dict['version'] = row[0]
-        s_dict['buildtime'] = row[1]
-        s_dict['methods'] = row[2]
-        s_dict['links'] = row[3]
-        api_list.append(s_dict)
-    conn.close()
-    return jsonify({'api_version': api_list}), 200
-
-
 
 @app.route("/api/users",methods=['GET'])
 def get_users():
@@ -69,47 +52,6 @@ def add_user(new_user):
     conn.close()
     return jsonify(a_dict)
 
-@app.route("/api/msgs",methods=['GET'])
-def get_msg():
-    conn = sqlite3.connect('mydb.db')
-    api_list=[]
-    cursor= conn.execute("SELECT id,username,message,msg_time from msg")
-    data = cursor.fetchall()
-    print(f"data {data} {type(data)}")
-    if data !=0:
-        for row in data:
-            msgs = {}
-            msgs['username'] = row[1]
-            msgs['message'] = row[2]
-            msgs['msg_time'] = row[3]
-            print(msgs)
-            api_list.append(msgs)
-    else:
-        return api_list
-    conn.close()
-    print(api_list)
-    return jsonify({'msg_list':api_list})
-
-@app.route("/api/msgs",methods=['POST'])
-def add_msg():
-    user_msg = {}
-    if not request.json or not 'username' in request.json or not 'message' in request.json:
-        abort(400)
-    user_msg['username'] = request.json['username']
-    user_msg['message'] = request.json['message']
-    user_msg['msg_time'] = strftime("%Y-%m-%d  %H:%M:%S",gmtime())
-    print(user_msg)
-    conn = sqlite3.connect('mydb.db')
-    cursor = conn.cursor()
-    cursor.execute("SELECT * from users where username=?",(user_msg['username'],))
-    data = cursor.fetchall()
-
-    if len(data) == 0:
-        abort(404)
-    else:
-        cursor.execute("INSERT into msg (username,message,msg_time) values(?,?,?)",(user_msg['username'],user_msg['message'],user_msg['msg_time']))
-    conn.commit()
-    return jsonify({'status':"Success"}),200
 
 
 if __name__ == "__main__":

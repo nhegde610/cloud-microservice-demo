@@ -37,7 +37,13 @@
 		<script src="http://ajax.aspnetcdn.com/ajax/knockout/knockout-2.2.1.js"></script>
 		<script>
 			function addUser(){
-				var furl = "http://0.0.0.0:3001/api/users"
+				//var furl = "http://0.0.0.0:3001/api/users"
+
+				var hostname = document.location.hostname;
+				var port = ":3001/";
+				var api = "/api/users";
+
+				var furl = "http://" + hostname + port + api; 
 
 				usrname = document.getElementById('username').value
 				passwd = document.getElementById('password').value
@@ -59,8 +65,12 @@
 		</script>
 		<script>
 			function showUser(){
-				var furl = "http://0.0.0.0:3001/api/users"
-				
+				//var furl = "http://0.0.0.0:3001/api/users"
+				var hostname = document.location.hostname;
+				var port = ":3001/";
+				var api = "/api/users";
+
+				var furl = "http://" + hostname + port + api;
 				$.getJSON(furl,
 					function(data){
 						users_list = data.user_list;

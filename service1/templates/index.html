@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title> Users board</title>
+	</head>
+	<body>
+		<div class="navbar">
+			<div class="navbar-inner">
+				<a class="brand" href="#">Users board</a>
+			</div>
+		</div>
+
+		<h3>Registered Users</h3>
+		<div id="usersfromservice">
+
+		</div>
+		 <button onclick="showUser()" class="btn btn-primary"> Show Users</button>
+		<h3>New User Register</h3>
+		<div id="main" class="container">
+			<form>
+  				<div class="form-group">
+    				<label for="username">Username</label>
+    				<input type="username" class="form-control" id="username"  placeholder="Enter username">
+ 				</div>
+  				<div class="form-group">
+    				<label for="password">Password</label>
+    				<input type="password" class="form-control" id="password" placeholder="Password">
+  				</div>
+  				<button type="submit" onclick="addUser()" class="btn btn-primary">Submit</button>
+			</form>
+		</div>
+		
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<link href="http://netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/css/bootstrap-combined.min.css" rel="stylesheet">
+		<script src="http://ajax.aspnetcdn.com/ajax/jquery/jquery-1.9.0.js"></script>
+		<script src="http://netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/js/bootstrap.min.js"></script>
+		<script src="http://ajax.aspnetcdn.com/ajax/knockout/knockout-2.2.1.js"></script>
+		<script>
+			function addUser(){
+				var furl = "http://0.0.0.0:3001/api/users"
+
+				usrname = document.getElementById('username').value
+				passwd = document.getElementById('password').value
+				
+				data = { 'username':usrname,'password':passwd}
+				let xhr = new XMLHttpRequest();
+				xhr.open('POST',furl,true);
+				xhr.setRequestHeader('Content-Type', 'application/json; charset=UTF-8');
+				xhr.send(JSON.stringify(data));
+
+				xhr.onreadystatechange = processRequest;
+				
+				function processRequest(e){
+					if (xhr.readyState == 4 && xhr.status == 200){
+						alert("success");
+					}
+				}
+			}
+		</script>
+		<script>
+			function showUser(){
+				var furl = "http://0.0.0.0:3001/api/users"
+				
+				$.getJSON(furl,
+					function(data){
+						users_list = data.user_list;
+						
+						var thediv = document.getElementById("usersfromservice");
+						textnode = thediv.childNodes[0];
+						thediv.removeChild(textnode);
+
+						var users = []
+						for (var i=0,l=data.user_list.length;i<l;i++){
+							var obj = data.user_list[i];
+							var user_text = obj.username;
+							users.push(user_text);
+						}
+
+						
+						var theDiv  = document.getElementById("usersfromservice");
+						var content = document.createTextNode(users);
+						theDiv.append(content);
+					
+					}	
+				);
+			}
+		</script>
+
+	</body>
+</html>
